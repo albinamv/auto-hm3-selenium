@@ -18,7 +18,7 @@ public class OrderTest {
 
     @BeforeAll
     static void setUp() {
-        System.setProperty("webdriver.chrome.driver", "driver/win/chromedriver.exe"); // название драйвера и путь до драйвера
+        //System.setProperty("webdriver.chrome.driver", "driver/win/chromedriver.exe"); // название драйвера и путь до драйвера
         WebDriverManager.chromedriver().setup();
     }
 
