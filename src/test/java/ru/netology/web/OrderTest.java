@@ -81,7 +81,7 @@ public class OrderTest {
         form.$("[data-test-id = agreement]").click();
         form.$("button").click();
 
-        form.$("[data-test-id = name] .input__sub").shouldHave(text("Допустимы только русские буквы, пробелы и дефисы."));;
+        form.$("[data-test-id = name] .input__sub").shouldHave(text("Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
@@ -91,6 +91,6 @@ public class OrderTest {
         form.$("[data-test-id = agreement]").click();
         form.$("button").click();
 
-        form.$("[data-test-id = phone] .input__sub").shouldHave(text("Телефон указан неверно. Должно быть 11 цифр"));;
+        form.$("[data-test-id = phone] .input__sub").shouldHave(text("Телефон указан неверно. Должно быть 11 цифр"));
     }
 }
