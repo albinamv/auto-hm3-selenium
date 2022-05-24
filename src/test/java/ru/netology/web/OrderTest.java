@@ -1,67 +1,96 @@
 package ru.netology.web;
 
 import com.codeborne.selenide.SelenideElement;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Selenide.$;
-import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selenide.*;
 
 public class OrderTest {
-//    private WebDriver driver;
-//    private ChromeOptions options;
-//
-//    @BeforeAll
-//    static void setUp() {
-//        //System.setProperty("webdriver.chrome.driver", "driver/win/chromedriver.exe"); // название драйвера и путь до драйвера
-//        WebDriverManager.chromedriver().setup();
-//    }
-//
-//    @BeforeEach
-//    public void initializeDriver() {
-//        options = new ChromeOptions();
-//        options.addArguments("--disable-dev-shm-usage");
-//        options.addArguments("--no-sandbox");
-//        options.addArguments("--headless");
-//        driver = new ChromeDriver(options);
-//    }
-//
-//    @AfterEach
-//    public void close() {
-//        if (driver != null) {
-//            driver.quit();
-//        }
-//        driver = null;
-//    }
+    private SelenideElement form;
+    private String validName = "Андрей Гончаров";
+    private String validPhone = "+79154785421";
 
-//    @Test
-//    public void shouldSendForm() {
-//        driver.get("http://localhost:9999");
-//
-//        driver.findElement(By.cssSelector("[data-test-id = name] input")).sendKeys("Андрей Гончаров");
-//        driver.findElement(By.cssSelector("[data-test-id = phone] input")).sendKeys("+79194885321");
-//
-//        driver.findElement(By.cssSelector("[data-test-id = agreement]")).click(); // по чекбоксу (согласие с политикой)
-//        driver.findElement(By.tagName("button")).click(); // отправить
-//
-//        String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
-//        String actual = driver.findElement(By.cssSelector("[data-test-id = order-success]")).getText().trim();
-//
-//        assertEquals(expected, actual);
-//    }
-
-    @Test
-    public void shouldSendForm() {
+    @BeforeEach
+    public void openResource() {
         open("http://localhost:9999");
+        form = $("form");
+    }
 
-        SelenideElement form = $("form");
-        form.$("[data-test-id = name] input").setValue("Андрей Гончаров");
-        form.$("[data-test-id = phone] input").setValue("+79154785421");
+    // задание 1
+    @Test
+    public void shouldSendFormWithPositiveValues() {
+        form.$("[data-test-id = name] input").setValue(validName);
+        form.$("[data-test-id = phone] input").setValue(validPhone);
         form.$("[data-test-id = agreement]").click();
         form.$("button").click();
 
         String expected = "Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.";
         $("[data-test-id = order-success]").shouldHave(exactText(expected));
+    }
 
+    // задание 2
+    @Test
+    public void shouldNotSendEmptyForm() {
+        form.$("button").click();
+
+        $(".input_invalid").should(exist);
+    }
+
+    @Test
+    public void shouldNotSendFormWithEmptyName() {
+        form.$("[data-test-id = phone] input").setValue(validPhone);
+        form.$("[data-test-id = agreement]").click();
+        form.$("button").click();
+
+        $(".input_invalid").should(exist);
+    }
+
+    @Test
+    public void shouldNotSendFormWithEmptyPhone() {
+        form.$("[data-test-id = name] input").setValue(validName);
+        form.$("[data-test-id = agreement]").click();
+        form.$("button").click();
+
+        $(".input_invalid").should(exist);
+    }
+
+    @Test
+    public void shouldNotSendFormWithEmptyAgreement() {
+        form.$("[data-test-id = name] input").setValue(validName);
+        form.$("[data-test-id = phone] input").setValue(validPhone);
+        form.$("button").click();
+
+        $(".input_invalid").should(exist);
+    }
+
+    @Test
+    public void shouldNotSendFormWithInvalidArguements() {
+        form.$("[data-test-id = name] input").setValue("Ivan Petrov");
+        form.$("[data-test-id = phone] input").setValue("111");
+        form.$("[data-test-id = agreement]").click();
+        form.$("button").click();
+
+        $(".input_invalid").should(exist);
+    }
+
+    @Test
+    public void shouldShowNameRequirements() {
+        form.$("[data-test-id = name] input").setValue("Ivan Petrov");
+        form.$("[data-test-id = phone] input").setValue(validPhone);
+        form.$("[data-test-id = agreement]").click();
+        form.$("button").click();
+
+        form.$("[data-test-id = name] .input__sub").shouldHave(text("Допустимы только русские буквы, пробелы и дефисы."));;
+    }
+
+    @Test
+    public void shouldShowPhoneRequirements() {
+        form.$("[data-test-id = name] input").setValue(validName);
+        form.$("[data-test-id = phone] input").setValue("111");
+        form.$("[data-test-id = agreement]").click();
+        form.$("button").click();
+
+        form.$("[data-test-id = phone] .input__sub").shouldHave(text("Телефон указан неверно. Должно быть 11 цифр"));;
     }
 }
