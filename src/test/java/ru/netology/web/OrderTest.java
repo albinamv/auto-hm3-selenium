@@ -34,7 +34,7 @@ public class OrderTest {
     public void shouldNotSendEmptyForm() {
         form.$("button").click();
 
-        form.$(".form-field:first-child .input_invalid").should(exist);
+        form.$("[data-test-id = name].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
